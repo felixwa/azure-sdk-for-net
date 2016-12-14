@@ -18,8 +18,20 @@ namespace Microsoft.Azure.Management.CognitiveServices.Models
     [JsonConverter(typeof(StringEnumConverter))]
     public enum Kind
     {
+        [EnumMember(Value = "Academic")]
+        Academic,
+        [EnumMember(Value = "Bing.Autosuggest")]
+        BingAutosuggest,
+        [EnumMember(Value = "Bing.Search")]
+        BingSearch,
+        [EnumMember(Value = "Bing.Speech")]
+        BingSpeech,
+        [EnumMember(Value = "Bing.SpellCheck")]
+        BingSpellCheck,
         [EnumMember(Value = "ComputerVision")]
         ComputerVision,
+        [EnumMember(Value = "ContentModerator")]
+        ContentModerator,
         [EnumMember(Value = "Emotion")]
         Emotion,
         [EnumMember(Value = "Face")]
@@ -28,10 +40,16 @@ namespace Microsoft.Azure.Management.CognitiveServices.Models
         LUIS,
         [EnumMember(Value = "Recommendations")]
         Recommendations,
+        [EnumMember(Value = "SpeakerRecognition")]
+        SpeakerRecognition,
         [EnumMember(Value = "Speech")]
         Speech,
+        [EnumMember(Value = "SpeechTranslation")]
+        SpeechTranslation,
         [EnumMember(Value = "TextAnalytics")]
         TextAnalytics,
+        [EnumMember(Value = "TextTranslation")]
+        TextTranslation,
         [EnumMember(Value = "WebLM")]
         WebLM
     }

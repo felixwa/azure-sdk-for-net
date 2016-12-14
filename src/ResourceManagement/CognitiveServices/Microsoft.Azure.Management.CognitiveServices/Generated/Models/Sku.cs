@@ -37,8 +37,8 @@ namespace Microsoft.Azure.Management.CognitiveServices.Models
 
         /// <summary>
         /// Gets or sets the sku name. Required for account creation, optional
-        /// for update. Possible values include: 'F0', 'S0', 'S1', 'S2',
-        /// 'S3', 'S4'
+        /// for update. Possible values include: 'F0', 'P0', 'P1', 'P2',
+        /// 'S0', 'S1', 'S2', 'S3', 'S4', 'S5', 'S6'
         /// </summary>
         [JsonProperty(PropertyName = "name")]
         public SkuName Name { get; set; }

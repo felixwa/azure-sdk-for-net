@@ -20,6 +20,12 @@ namespace Microsoft.Azure.Management.CognitiveServices.Models
     {
         [EnumMember(Value = "F0")]
         F0,
+        [EnumMember(Value = "P0")]
+        P0,
+        [EnumMember(Value = "P1")]
+        P1,
+        [EnumMember(Value = "P2")]
+        P2,
         [EnumMember(Value = "S0")]
         S0,
         [EnumMember(Value = "S1")]
@@ -29,6 +35,10 @@ namespace Microsoft.Azure.Management.CognitiveServices.Models
         [EnumMember(Value = "S3")]
         S3,
         [EnumMember(Value = "S4")]
-        S4
+        S4,
+        [EnumMember(Value = "S5")]
+        S5,
+        [EnumMember(Value = "S6")]
+        S6
     }
 }

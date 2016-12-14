@@ -47,8 +47,11 @@ namespace Microsoft.Azure.Management.CognitiveServices.Models
 
         /// <summary>
         /// Required. Indicates the type of cognitive service account.
-        /// Possible values include: 'ComputerVision', 'Emotion', 'Face',
-        /// 'LUIS', 'Recommendations', 'Speech', 'TextAnalytics', 'WebLM'
+        /// Possible values include: 'Academic', 'Bing.Autosuggest',
+        /// 'Bing.Search', 'Bing.Speech', 'Bing.SpellCheck',
+        /// 'ComputerVision', 'ContentModerator', 'Emotion', 'Face', 'LUIS',
+        /// 'Recommendations', 'SpeakerRecognition', 'Speech',
+        /// 'SpeechTranslation', 'TextAnalytics', 'TextTranslation', 'WebLM'
         /// </summary>
         [JsonProperty(PropertyName = "kind")]
         public Kind Kind { get; set; }

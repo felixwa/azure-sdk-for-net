@@ -29,6 +29,7 @@ using System.Net.Http;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using Xunit;
+using System.Runtime.Serialization;
 
 namespace CognitiveServices.Tests.Helpers
 {
@@ -47,8 +48,8 @@ namespace CognitiveServices.Tests.Helpers
 
         // These are used to create default accounts
         public static string DefaultLocation = IsTestTenant ? null : "westus";
-        public static SkuName DefaultSkuName = SkuName.S1;
-        public static Kind DefaultKind = Kind.TextAnalytics;
+        public const SkuName DefaultSkuName = SkuName.S1;
+        public const Kind DefaultKind = Kind.TextAnalytics;
         public static Dictionary<string, string> DefaultTags = new Dictionary<string, string>
             {
                 {"key1","value1"},
@@ -101,14 +102,14 @@ namespace CognitiveServices.Tests.Helpers
             return Handler;
         }
 
-        public static CognitiveServicesAccountCreateParameters GetDefaultCognitiveServicesAccountParameters()
+        public static CognitiveServicesAccountCreateParameters GetDefaultCognitiveServicesAccountParameters(Kind kind = DefaultKind, SkuName skuName = DefaultSkuName)
         {
             CognitiveServicesAccountCreateParameters account = new CognitiveServicesAccountCreateParameters
             {
                 Location = DefaultLocation,
                 Tags = DefaultTags,
-                Sku = new Sku { Name = DefaultSkuName },
-                Kind = DefaultKind,
+                Sku = new Sku { Name = skuName },
+                Kind = kind,
                 Properties = new object(),
             };
 
@@ -151,18 +152,36 @@ namespace CognitiveServices.Tests.Helpers
             {
                 Sku = new Sku { Name = skuName },
                 Kind = accountType,
-                Location = CognitiveServicesManagementTestUtilities.DefaultLocation,
+                Location = DefaultLocation,
                 Properties = new object(),
             };
             var account = cognitiveServicesMgmtClient.CognitiveServicesAccounts.Create(rgName, accountName, parameters);
-            CognitiveServicesManagementTestUtilities.VerifyAccountProperties(account, false);
+            VerifyAccountProperties(account, false, accountType, skuName);
             Assert.Equal(skuName, account.Sku.Name);
             Assert.Equal(accountType.ToString(), account.Kind);
 
             return account;
         }
 
-        public static void VerifyAccountProperties(CognitiveServicesAccount account, bool useDefaults)
+        public static CognitiveServicesAccount CreateAndValidateAccountWithKindSkuLocation(CognitiveServicesManagementClient cognitiveServicesMgmtClient, string rgName, Kind accountType, SkuName skuName, string location)
+        {
+            // Create account with only required params
+            var accountName = TestUtilities.GenerateName("csa");
+            var parameters = new CognitiveServicesAccountCreateParameters
+            {
+                Sku = new Sku { Name = skuName },
+                Kind = accountType,
+                Location = location,
+                Properties = new object(),
+            };
+            var account = cognitiveServicesMgmtClient.CognitiveServicesAccounts.Create(rgName, accountName, parameters);
+            VerifyAccountProperties(account, false, accountType, skuName, location);
+
+            return account;
+        }
+
+
+        public static void VerifyAccountProperties(CognitiveServicesAccount account, bool useDefaults, Kind kind = DefaultKind, SkuName skuName = DefaultSkuName, string location = "westus")
         {
             Assert.NotNull(account); // verifies that the account is actually created
             Assert.NotNull(account.Id);
@@ -179,14 +198,20 @@ namespace CognitiveServices.Tests.Helpers
 
             if (useDefaults)
             {
-                Assert.Equal(CognitiveServicesManagementTestUtilities.DefaultLocation, account.Location);
-                Assert.Equal(CognitiveServicesManagementTestUtilities.DefaultSkuName, account.Sku.Name);
-                Assert.Equal(CognitiveServicesManagementTestUtilities.DefaultKind.ToString(), account.Kind);
+                Assert.Equal(DefaultLocation, account.Location);
+                Assert.Equal(DefaultSkuName, account.Sku.Name);
+                Assert.Equal(DefaultKind.GetAttributeOfType<EnumMemberAttribute>().Value, account.Kind);
 
                 Assert.NotNull(account.Tags);
                 Assert.Equal(2, account.Tags.Count);
                 Assert.Equal(account.Tags["key1"], "value1");
                 Assert.Equal(account.Tags["key2"], "value2");
+            }
+            else
+            {
+                Assert.Equal(skuName, account.Sku.Name);
+                Assert.Equal(kind.GetAttributeOfType<EnumMemberAttribute>().Value, account.Kind);
+                Assert.Equal(location, account.Location);
             }
         }
 
@@ -201,6 +226,22 @@ namespace CognitiveServices.Tests.Helpers
             {
                 Assert.Equal(expectedErrorCode, e.Body.ErrorProperty.Code);
             }
+        }
+
+        public static T GetAttributeOfType<T>(this Enum enumVal) where T : Attribute
+        {
+            var type = enumVal.GetType();
+            var memInfo = type.GetMember(enumVal.ToString());
+            if(memInfo != null && memInfo.Count() > 0)
+            {
+                var attributes = memInfo[0].GetCustomAttributes(typeof(T), false);
+                if (attributes.Count() > 0)
+                {
+                    return attributes.First() as T;
+                }
+            }
+
+            return null;
         }
     }
 }
